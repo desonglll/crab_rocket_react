@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Form, Input, Select } from "antd";
+import { Button, Form, Input, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone"; // 引入时区插件
@@ -20,7 +20,6 @@ function PostDetail() {
       try {
         const response = await axios.get(`post/${post_id}`);
         setPost(response.data.data);
-        console.log(response.data.data);
       } catch (e) {
         console.log(e);
       }
@@ -40,23 +39,13 @@ function PostDetail() {
       console.error("Error submitting form:", error);
     }
   };
-  const handleGoBack = () => {
+  const handleBack = () => {
     navigate(-1); // 返回上一级
   };
   return (
     <div>
-      {loading ? (
-        <div></div>
-      ) : (
+      {!loading && (
         <div>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={handleGoBack}
-            style={{ margin: 10 }}
-          >
-            Back
-          </button>
           <Form
             name="basic"
             labelCol={{ span: 8 }}
@@ -74,6 +63,9 @@ function PostDetail() {
             // onFinishFailed={onFinishFailed}
             autoComplete="off"
           >
+            <Form.Item>
+              <Button onClick={handleBack}>Back</Button>
+            </Form.Item>
             <Form.Item label="Title" name="title">
               <Input />
             </Form.Item>
@@ -100,9 +92,9 @@ function PostDetail() {
             <Form.Item label="Updated Time" name="updated_at">
               <Input disabled={true} />
             </Form.Item>
-            <button type="submit" className="btn btn-primary">
+            <Button type="primary" htmlType="submit">
               Submit
-            </button>
+            </Button>
           </Form>
         </div>
       )}

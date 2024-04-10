@@ -1,8 +1,14 @@
 interface Task {
-  content: string | null;
-  created_at: string;
   id: number;
-  title: string | null;
+  title: string;
+  content: string;
+  user_id: number;
+  created_at: string;
   updated_at: string;
+}
+
+interface PatchTask {
+  content: string;
+  title: string;
   user_id: number;
 }

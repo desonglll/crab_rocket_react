@@ -1,25 +1,22 @@
 import { Button, Form, Input, Select } from "antd";
-import TextArea from "antd/es/input/TextArea";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function PostNew() {
-  const navigate = useNavigate();
+function TaskNew() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const handleSubmit = async (event: PatchPost) => {
+  const navigate = useNavigate();
+  const handleSubmit = async (event: PatchTask) => {
+    console.log(event);
     try {
       // Send form data to server using axios or fetch
-      await axios.post(`post`, event).then(() => {
+      await axios.post(`task`, event).then(() => {
         navigate(-1);
       });
     } catch (error) {
       console.error("Error submitting form:", error);
     }
-  };
-  const handleBack = () => {
-    navigate(-1); // 返回上一级
   };
   const fetchUser = async () => {
     try {
@@ -29,14 +26,15 @@ function PostNew() {
       console.log(error);
     }
   };
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   useEffect(() => {
     fetchUser().then(() => {
       setLoading(!loading);
     });
-    return () => {};
   }, []);
-
   return (
     <>
       {!loading && (
@@ -55,13 +53,13 @@ function PostNew() {
             <Form.Item>
               <Button onClick={handleBack}>Back</Button>
             </Form.Item>
-            <Form.Item label="Title" name="title">
+            <Form.Item label={"Title"} name={"title"}>
               <Input />
             </Form.Item>
-            <Form.Item label="Body" name="body">
-              <TextArea autoSize />
+            <Form.Item label={"Content"} name={"content"}>
+              <Input />
             </Form.Item>
-            <Form.Item label="User Id" name="user_id">
+            <Form.Item label={"User"} name={"user_id"}>
               <Select
                 style={{ width: 120 }}
                 options={users.map(
@@ -71,9 +69,6 @@ function PostNew() {
                   })
                 )}
               />
-            </Form.Item>
-            <Form.Item label="Status" name="status">
-              <Input />
             </Form.Item>
             <Button type="primary" htmlType="submit">
               Submit
@@ -85,4 +80,4 @@ function PostNew() {
   );
 }
 
-export default PostNew;
+export default TaskNew;

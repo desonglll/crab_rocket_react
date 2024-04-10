@@ -1,15 +1,15 @@
 interface Post {
-  body: string;
   post_id: number;
-  status: string;
   title: string;
+  body: string;
   user_id: number;
-  updated_at: string;
+  status: string;
   created_at: string;
+  updated_at: string;
 }
 interface PatchPost {
-  body: string;
-  status: string;
   title: string;
+  body: string;
   user_id: number;
+  status: string;
 }

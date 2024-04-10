@@ -1,20 +1,47 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
-import dayjs from "dayjs";
+import { Button, Space, Table } from "antd";
+
+interface PostParams {
+  user_id: number | null;
+  limit: number | null;
+  offset: number | null;
+}
+
+interface PostInfo {
+  count: number;
+}
+
+interface PostResponse {
+  info: PostInfo;
+  posts: Post[];
+}
 
 function PostList() {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [postResponse, setPostResponse] = useState<PostResponse>({
+    info: { count: -1 },
+    posts: [],
+  });
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const getPostsByParams = async (params: PostParams) => {
+    try {
+      const response = await axios.post("/post/filter", params);
+      setPostResponse(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    const getPosts = async () => {
-      try {
-        const response = await axios.get("/post");
-        setPosts(response.data.data);
-      } catch (e) {}
-    };
-    getPosts();
+    getPostsByParams({
+      user_id: null,
+      limit: 10,
+      offset: 0,
+    }).then(() => {
+      setLoading(!loading);
+    });
   }, []);
   const handleGoBack = () => {
     navigate(-1); // 返回上一级
@@ -22,79 +49,95 @@ function PostList() {
   const handleNewPost = () => {
     navigate("/post/new");
   };
+  const handleDelete = (id: number) => {
+    console.log(id);
+
+    try {
+      axios.delete(`post/${id}`).then(() => {
+        window.location.reload();
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const columns = [
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: "User ID",
+      dataIndex: "user_id",
+      key: "user_id",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+    },
+    {
+      title: "created_at",
+      dataIndex: "created_at",
+      key: "created_at",
+    },
+    {
+      title: "updated_at",
+      dataIndex: "updated_at",
+      key: "updated_at",
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_: number, post: Post) => (
+        <Space size="middle">
+          <Button danger onClick={() => handleDelete(post.post_id)}>
+            Delete
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
   return (
     <>
-      <div>
-        <p className="fs-2">Post List</p>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={handleGoBack}
-          style={{ margin: 10 }}
-        >
-          Back
-        </button>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={handleNewPost}
-          style={{ margin: 10 }}
-        >
-          New
-        </button>
-        <table className="table table-hover table-striped-columns">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Title</th>
-              <th>User ID</th>
-              <th>Status</th>
-              <th>Created At</th>
-              <th>Updated At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {posts.map((post: Post) => (
-              <tr key={post.post_id}>
-                <td>
-                  <div key={post.post_id}>
-                    <Link to={`/post/${post.post_id}`}>{post.post_id}</Link>
-                  </div>
-                </td>
-                <td>
-                  <div key={post.post_id}>
-                    <Link to={`/post/${post.post_id}`}>{post.title}</Link>
-                  </div>
-                </td>
-                <td>
-                  <div key={post.post_id}>
-                    <Link to={`/user/${post.post_id}`}>{post.user_id}</Link>
-                  </div>
-                </td>
-                <td>
-                  <div key={post.post_id}>
-                    <Link to={`/post/${post.post_id}`}>{post.status}</Link>
-                  </div>
-                </td>
-                <td>
-                  <div key={post.post_id}>
-                    <Link to={`/post/${post.post_id}`}>
-                      {dayjs(post.created_at).format("YYYY年MM月DD日 HH:mm:ss")}
-                    </Link>
-                  </div>
-                </td>
-                <td>
-                  <div key={post.post_id}>
-                    <Link to={`/post/${post.post_id}`}>
-                      {dayjs(post.updated_at).format("YYYY年MM月DD日 HH:mm:ss")}
-                    </Link>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {!loading && (
+        <div>
+          <p className="fs-2">Post List</p>
+          <Button type="primary" onClick={handleGoBack} style={{ margin: 10 }}>
+            Back
+          </Button>
+          <Button type="primary" onClick={handleNewPost} style={{ margin: 10 }}>
+            New
+          </Button>
+          <Table
+            columns={columns}
+            dataSource={postResponse?.posts}
+            rowKey={"post_id"}
+            pagination={{
+              showSizeChanger: true,
+              showQuickJumper: true,
+              onChange(page, pageSize) {
+                const params: PostParams = {
+                  user_id: null,
+                  limit: pageSize,
+                  offset: (page - 1) * pageSize,
+                };
+                getPostsByParams(params);
+              },
+              onShowSizeChange(current, size) {
+                const params: PostParams = {
+                  user_id: null,
+                  limit: size,
+                  offset: (current - 1) * size,
+                };
+                getPostsByParams(params);
+              },
+              total: postResponse.info.count,
+            }}
+          />
+        </div>
+      )}
     </>
   );
 }
