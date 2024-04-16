@@ -6,10 +6,13 @@ interface Post {
   status: string;
   created_at: string;
   updated_at: string;
+  username: string;
 }
 interface PatchPost {
   title: string;
   body: string;
   user_id: number;
   status: string;
+  created_at: string;
+  updated_at: string;
 }

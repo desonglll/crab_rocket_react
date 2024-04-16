@@ -1,8 +1,9 @@
+import { Button, Space, Table } from "antd";
+import { NavLink } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.css";
-import { Button, Space, Table } from "antd";
+import dayjs from "dayjs";
+import { Fade } from "@mui/material";
 
 interface PostParams {
   user_id: number | null;
@@ -10,25 +11,33 @@ interface PostParams {
   offset: number | null;
 }
 
-interface PostInfo {
-  count: number;
-}
-
 interface PostResponse {
   info: PostInfo;
   posts: Post[];
 }
 
-function PostList() {
+interface PostInfo {
+  count: number;
+}
+
+export function PostTable() {
   const [postResponse, setPostResponse] = useState<PostResponse>({
     info: { count: -1 },
     posts: [],
   });
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [posts, setPosts] = useState<Post[]>([]);
   const getPostsByParams = async (params: PostParams) => {
     try {
       const response = await axios.post("/post/filter", params);
+      const mapped_data = response.data.data.posts.map((item: Post) => {
+        return {
+          ...item,
+          created_at: dayjs(item.created_at).format("YYYY年MM月DD日 HH:mm:ss"),
+          updated_at: dayjs(item.updated_at).format("YYYY年MM月DD日 HH:mm:ss"),
+        };
+      });
+      setPosts(mapped_data);
       setPostResponse(response.data.data);
     } catch (error) {
       console.log(error);
@@ -43,12 +52,51 @@ function PostList() {
       setLoading(!loading);
     });
   }, []);
-  const handleGoBack = () => {
-    navigate(-1); // 返回上一级
-  };
-  const handleNewPost = () => {
-    navigate("/post/new");
-  };
+
+  const columns = [
+    {
+      title: "文章标题",
+      dataIndex: "title",
+      key: "title",
+      render: (_: string, post: Post) => (
+        <NavLink to={`/post/${post.post_id}`}>{post.title}</NavLink>
+      ),
+    },
+    {
+      title: "用户ID",
+      dataIndex: "user_id",
+      key: "user_id",
+      render: (_: string, post: Post) => (
+        <NavLink to={`/user/${post.user_id}`}>{post.username}</NavLink>
+      ),
+    },
+    {
+      title: "状态",
+      dataIndex: "status",
+      key: "status",
+    },
+    {
+      title: "创建时间",
+      dataIndex: "created_at",
+      key: "created_at",
+    },
+    {
+      title: "更新时间",
+      dataIndex: "updated_at",
+      key: "updated_at",
+    },
+    {
+      title: "动作",
+      key: "action",
+      render: (_: number, post: Post) => (
+        <Space size="middle">
+          <Button danger onClick={() => handleDelete(post.post_id)}>
+            Delete
+          </Button>
+        </Space>
+      ),
+    },
+  ];
   const handleDelete = (id: number) => {
     console.log(id);
 
@@ -60,59 +108,14 @@ function PostList() {
       console.log(e);
     }
   };
-  const columns = [
-    {
-      title: "Title",
-      dataIndex: "title",
-      key: "title",
-    },
-    {
-      title: "User ID",
-      dataIndex: "user_id",
-      key: "user_id",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-    },
-    {
-      title: "created_at",
-      dataIndex: "created_at",
-      key: "created_at",
-    },
-    {
-      title: "updated_at",
-      dataIndex: "updated_at",
-      key: "updated_at",
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (_: number, post: Post) => (
-        <Space size="middle">
-          <Button danger onClick={() => handleDelete(post.post_id)}>
-            Delete
-          </Button>
-        </Space>
-      ),
-    },
-  ];
-
   return (
     <>
-      {!loading && (
-        <div>
-          <p className="fs-2">Post List</p>
-          <Button type="primary" onClick={handleGoBack} style={{ margin: 10 }}>
-            Back
-          </Button>
-          <Button type="primary" onClick={handleNewPost} style={{ margin: 10 }}>
-            New
-          </Button>
+      {
+        <Fade in={!loading}>
           <Table
+            size="small"
             columns={columns}
-            dataSource={postResponse?.posts}
+            dataSource={posts}
             rowKey={"post_id"}
             pagination={{
               showSizeChanger: true,
@@ -136,10 +139,8 @@ function PostList() {
               total: postResponse.info.count,
             }}
           />
-        </div>
-      )}
+        </Fade>
+      }
     </>
   );
 }
-
-export default PostList;
