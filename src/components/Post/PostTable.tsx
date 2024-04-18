@@ -11,26 +11,14 @@ interface PostParams {
   offset: number | null;
 }
 
-interface PostResponse {
-  info: PostInfo;
-  posts: Post[];
-}
-
-interface PostInfo {
-  count: number;
-}
-
 export function PostTable() {
-  const [postResponse, setPostResponse] = useState<PostResponse>({
-    info: { count: -1 },
-    posts: [],
-  });
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [info, setInfo] = useState<Info>();
   const getPostsByParams = async (params: PostParams) => {
     try {
       const response = await axios.post("/post/filter", params);
-      const mapped_data = response.data.data.posts.map((item: Post) => {
+      const mapped_data = response.data.data.map((item: Post) => {
         return {
           ...item,
           created_at: dayjs(item.created_at).format("YYYY年MM月DD日 HH:mm:ss"),
@@ -38,7 +26,6 @@ export function PostTable() {
         };
       });
       setPosts(mapped_data);
-      setPostResponse(response.data.data);
     } catch (error) {
       console.log(error);
     }
@@ -49,10 +36,20 @@ export function PostTable() {
       limit: 10,
       offset: 0,
     }).then(() => {
-      setLoading(!loading);
+      fetchInfo().then(() => {
+        setLoading(!loading);
+      });
     });
   }, []);
-
+  const fetchInfo = async () => {
+    try {
+      const response = await axios.get(`info`);
+      console.log(response.data);
+      setInfo(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const columns = [
     {
       title: "文章标题",
@@ -136,7 +133,7 @@ export function PostTable() {
                 };
                 getPostsByParams(params);
               },
-              total: postResponse.info.count,
+              total: info?.post_count,
             }}
           />
         </Fade>

@@ -124,8 +124,12 @@ export function UserTable() {
         <Fade in={!loading}>
           <div>
             {contextHolder}
-
-            <Table dataSource={users} columns={columns} rowKey={"user_id"} />
+            <Table
+              dataSource={users}
+              columns={columns}
+              rowKey={"user_id"}
+              size={"small"}
+            />
           </div>
         </Fade>
       )}

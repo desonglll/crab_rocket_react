@@ -9,6 +9,7 @@ import { Post } from "./pages/Post/Post.tsx";
 import { User } from "./pages/User/User.tsx";
 import { UserDetail } from "./components/User/UserDetail.tsx";
 import { UserNew } from "./components/User/UserNew.tsx";
+import Employee from "./pages/Employee/Employee.tsx";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path={"user"} element={<User />} />
           <Route path={"user/new"} element={<UserNew />} />
           <Route path={"user/:user_id"} element={<UserDetail />} />
+          <Route path={"employee"} element={<Employee />} />
         </Routes>
       </BrowserRouter>
     </>
