@@ -6,7 +6,8 @@ import {Button, DatePicker, Form, Input, message} from "antd";
 import {BackButton} from "../Common/BackButton";
 import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone"; // 引入时区插件
-import utc from "dayjs/plugin/utc"; // 引入 UTC 插件
+import utc from "dayjs/plugin/utc";
+import SelectRole from "../Common/SelectRole.tsx";
 // 添加时区和 UTC 插件
 dayjs.extend(timezone);
 dayjs.extend(utc);
@@ -16,12 +17,12 @@ export function UserDetail() {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<User>();
     const [messageApi, contextHolder] = message.useMessage();
+    const [form] = Form.useForm(); // 使用 Form 实例
 
     const fetchUser = async () => {
         try {
             const response = await axios.get(`user/${user_id}`);
             setUser(response.data.data);
-            console.log(response.data.data);
         } catch (e) {
             console.log(e);
         }
@@ -42,6 +43,7 @@ export function UserDetail() {
         data.updated_at = dayjs(data.updated_at).format(
             "YYYY-MM-DDTHH:mm:ss.SSSSSS"
         );
+        console.log(data)
         try {
             axios.patch(`user/${user_id}`, data).then(() => {
                 messageApi
@@ -58,6 +60,13 @@ export function UserDetail() {
             console.log(error);
         }
     };
+    const handleSelectRole = (role: number) => {
+        console.log("select:", role)
+        // 使用 Form 实例的 setFieldsValue 方法更新表单字段值
+        form.setFieldsValue({
+            role: role,
+        });
+    };
     return (
         <>
             {!loading && (
@@ -68,7 +77,7 @@ export function UserDetail() {
                         <Form
                             initialValues={{
                                 username: user?.username,
-                                role: user?.role,
+                                role: user?.role_id,
                                 created_at: dayjs(user?.created_at),
                                 email: user?.email,
                                 password: user?.password,
@@ -82,12 +91,13 @@ export function UserDetail() {
                             wrapperCol={{span: 16}}
                             style={{maxWidth: 600}}
                             onFinish={onFinish}
+                            form={form}
                         >
                             <Form.Item name={"username"} label={"Username"}>
                                 <Input/>
                             </Form.Item>
                             <Form.Item name={"role"} label={"role"}>
-                                <Input/>
+                                <SelectRole selected_role={user?.role_id} onSelectRole={handleSelectRole}/>
                             </Form.Item>
                             <Form.Item name={"created_at"} label={"created_at"}>
                                 <DatePicker showTime/>

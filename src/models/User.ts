@@ -1,7 +1,7 @@
 interface User {
     user_id: number,
     username: string,
-    role: string | null,
+    role_id: number | null,
     created_at: string | null,
     email: string | null,
     password: string,
@@ -14,7 +14,7 @@ interface User {
 
 interface PatchUser {
     username: string,
-    role: string | null,
+    role_id: string | null,
     created_at: string | null,
     email: string | null,
     password: string,

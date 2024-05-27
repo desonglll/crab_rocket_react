@@ -1,6 +1,5 @@
 import "bootstrap/dist/css/bootstrap.css";
-import { Fab, Fade } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+import { Fade } from "@mui/material";
 import { BackButton } from "../Common/BackButton.tsx";
 import { NewPostButton } from "./NewPostButton.tsx";
 import { PostTable } from "./PostTable.tsx";
@@ -15,9 +14,6 @@ function PostList() {
             <BackButton />
             <NewPostButton />
             <PostTable />
-            <Fab color="secondary" aria-label="edit">
-              <EditIcon />
-            </Fab>
           </div>
         </Fade>
       }
