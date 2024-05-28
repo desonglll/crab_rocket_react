@@ -3,6 +3,7 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 import {NavLink} from "react-router-dom";
 import dayjs from "dayjs";
+import {Employee} from "../../models/models.ts";
 
 interface EmployeeParams {
     employee_id: number | null;

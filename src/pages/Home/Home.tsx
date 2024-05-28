@@ -1,67 +1,40 @@
-import { NavLink } from "react-router-dom";
-import "./Home.scss";
-import "bootstrap/dist/css/bootstrap.css";
-import dayjs from "dayjs";
-import { useEffect, useState } from "react";
-import { Fade } from "@mui/material";
+import {TopMenu} from "../../components/Common/TopMenu.tsx";
+import {Route, Routes} from "react-router-dom";
+import {Post} from "../Post/Post.tsx";
+import PostNew from "../../components/Post/PostNew.tsx";
+import PostDetail from "../../components/Post/PostDetail.tsx";
+import {Task} from "../Task/Task.tsx";
+import TaskNew from "../../components/Task/TaskNew.tsx";
+import TaskDetail from "../../components/Task/TaskDetail.tsx";
+import {User} from "../User/User.tsx";
+import {UserNew} from "../../components/User/UserNew.tsx";
+import {UserDetail} from "../../components/User/UserDetail.tsx";
+import Employee from "../Employee/Employee.tsx";
+import {Role} from "../Role/Role.tsx";
+import {Greet} from "../../components/Common/Greet.tsx";
+import {RoleNew} from "../../components/Role/RoleNew.tsx";
+import {RoleDetail} from "../../components/Role/RoleDetail.tsx";
 
-function Home() {
-  const [currentTime, setCurrentTime] = useState(
-    dayjs().format("YYYY年MM月DD日 HH:mm:ss")
-  );
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(dayjs().format("YYYY年MM月DD日 HH:mm:ss"));
-    }, 1000); // 每秒更新一次时间
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
-
-  return (
-    <>
-      <Fade in={true}>
-        <div className="container">
-          <p className="fs-2">Home</p>
-          {currentTime}
-          <div className="nav-list">
-            <table className="table table-hover">
-              <tbody>
-                <tr>
-                  <td>
-                    <div className="nav-link">
-                      <NavLink to={"post"}>Post</NavLink>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div className="nav-link">
-                      <NavLink to={"task"}>Task</NavLink>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div className="nav-link">
-                      <NavLink to={"user"}>User</NavLink>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div className="nav-link">
-                      <NavLink to={"employee"}>Employee</NavLink>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </Fade>
-    </>
-  );
+export function Home() {
+    return (
+        <>
+            <TopMenu/>
+            <Routes>
+                <Route path={"greet"} element={<Greet/>}/>
+                <Route path={"post/post-list"} element={<Post/>}/>
+                <Route path={"post/post-new"} element={<PostNew/>}/>
+                <Route path={"post/post-detail/:post_id"} element={<PostDetail/>}/>
+                <Route path={"task/task-list"} element={<Task/>}/>
+                <Route path={"task/task-new"} element={<TaskNew/>}/>
+                <Route path={"task/task-detail/:task_id"} element={<TaskDetail/>}/>
+                <Route path={"user/user-list"} element={<User/>}/>
+                <Route path={"user/user-new"} element={<UserNew/>}/>
+                <Route path={"user/user-detail/:user_id"} element={<UserDetail/>}/>
+                <Route path={"employee/employee-list"} element={<Employee/>}/>
+                <Route path={"role/role-list"} element={<Role/>}/>
+                <Route path={"role/role-new"} element={<RoleNew/>}/>
+                <Route path={"role/role-detail/:role_id"} element={<RoleDetail/>}/>
+            </Routes>
+        </>
+    )
 }
-
-export default Home;

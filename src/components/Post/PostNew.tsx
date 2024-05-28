@@ -4,6 +4,7 @@ import TextArea from "antd/es/input/TextArea";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {SelectUser} from "../Common/SelectUser.tsx";
+import {PatchPost} from "../../models/models.ts";
 
 function PostNew() {
     const navigate = useNavigate();

@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import {Fade} from "@mui/material";
+import {User} from "../../models/models.ts";
 
 export function UserTable() {
     const [loading, setLoading] = useState(true);
@@ -52,7 +53,7 @@ export function UserTable() {
             dataIndex: "username",
             key: "username",
             render: (_: string, user: User) => (
-                <NavLink to={`/user/${user.user_id}`}>{user.username}</NavLink>
+                <NavLink to={`/user/user-detail/${user.user_id}`}>{user.username}</NavLink>
             ),
         },
         {

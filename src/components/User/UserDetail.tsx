@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import timezone from "dayjs/plugin/timezone"; // 引入时区插件
 import utc from "dayjs/plugin/utc";
 import SelectRole from "../Common/SelectRole.tsx";
+import {PatchUser, User} from "../../models/models.ts";
 // 添加时区和 UTC 插件
 dayjs.extend(timezone);
 dayjs.extend(utc);

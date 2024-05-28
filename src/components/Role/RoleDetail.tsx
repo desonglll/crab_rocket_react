@@ -1,32 +1,33 @@
-import axios from "axios";
-import {useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
-import {Button, DatePicker, Form, Input, message} from "antd";
-import TextArea from "antd/es/input/TextArea";
-import dayjs from "dayjs";
-import timezone from "dayjs/plugin/timezone"; // 引入时区插件
-import utc from "dayjs/plugin/utc"; // 引入 UTC 插件
 import {Fade} from "@mui/material";
-import {SelectUser} from "../Common/SelectUser.tsx";
+import {Button, DatePicker, Form, Input, message} from "antd";
+import dayjs from "dayjs";
+import {useEffect, useState} from "react";
+import axios from "axios";
+import {useParams} from "react-router-dom";
 import {BackButton} from "../Common/BackButton.tsx";
-import {PatchPost, Post} from "../../models/models.ts";
+import {SelectPermission} from "../Permission/SelectPermission.tsx";
 
-// 添加时区和 UTC 插件
-dayjs.extend(timezone);
-dayjs.extend(utc);
+interface role {
+    role_id: number,
+    role_name: string,
+    permissions: string,
+    created_at: string,
+    updated_at: string,
+    description: string
+}
 
-
-function PostDetail() {
-    const {post_id} = useParams();
-    const [post, setPost] = useState<Post>();
+export function RoleDetail() {
+    const {role_id} = useParams();
+    const [role, setRole] = useState<role>();
     const [loading, setLoading] = useState(true);
     const [messageApi, contextHolder] = message.useMessage();
+    const [form] = Form.useForm(); // 使用 Form 实例
 
     useEffect(() => {
         const fetchPost = async () => {
             try {
-                const response = await axios.get(`post/${post_id}`);
-                setPost(response.data.data);
+                const response = await axios.get(`role/${role_id}`);
+                setRole(response.data.data);
             } catch (e) {
                 console.log(e);
             }
@@ -35,8 +36,7 @@ function PostDetail() {
             setLoading(!loading);
         });
     }, []);
-
-    const handleSubmit = async (data: PatchPost) => {
+    const handleSubmit = async (data: role) => {
         try {
             console.log(data);
             // 将 created_at 转换为 UTC 时间，并格式化为您希望的日期时间格式
@@ -49,7 +49,7 @@ function PostDetail() {
                 "YYYY-MM-DDTHH:mm:ss.SSSSSS"
             );
             // Send form data to server using axios or fetch
-            await axios.patch(`post/${post_id}`, data).then(() => {
+            await axios.patch(`role/${role_id}`, data).then(() => {
                 messageApi
                     .open({
                         type: "success",
@@ -63,53 +63,54 @@ function PostDetail() {
             console.error("Error submitting form:", error);
         }
     };
-
+    const handlePermissionChange = (event: string) => {
+        console.log('role new:', event)
+        form.setFieldsValue({
+            permissions: event
+        });
+    }
     return (
         <div>
             {!loading && (
                 <Fade in={true}>
                     <div>
                         {contextHolder}
+                        <BackButton/>
                         <Form
                             name="basic"
                             labelCol={{span: 8}}
                             wrapperCol={{span: 16}}
                             style={{maxWidth: 600}}
                             initialValues={{
-                                title: post?.title,
-                                body: post?.body,
-                                user_id: post?.user_id, // 将默认选中的用户ID传递给SelectUser组件
-                                status: post?.status,
-                                created_at: dayjs(post?.created_at),
-                                updated_at: dayjs(post?.updated_at),
+                                role_name: role?.role_name,
+                                role_id: role?.role_id,
+                                permissions: role?.permissions,
+                                description: role?.description,
+                                created_at: dayjs(role?.created_at),
+                                updated_at: dayjs(role?.updated_at),
                             }}
                             onFinish={handleSubmit}
                             autoComplete="off"
+                            form={form}
                         >
-                            <Form.Item>
-                                <BackButton/>
-                            </Form.Item>
-                            <Form.Item label="标题" name="title">
+                            <Form.Item name={"role_name"} label={"角色名称"}>
                                 <Input/>
                             </Form.Item>
-                            <Form.Item label="内容" name="body">
-                                <TextArea autoSize/>
+                            <Form.Item name={"permissions"} label={"权限"}>
+                                <SelectPermission defaultSelected={role?.permissions}
+                                                  onSelectPermission={handlePermissionChange}/>
                             </Form.Item>
-                            <Form.Item label="创建用户" name="user_id">
-                                <SelectUser defaultUserId={post?.user_id} onChange={() => {
-                                }}/>
-                            </Form.Item>
-                            <Form.Item label="状态" name="status">
+                            <Form.Item name={"description"} label={"描述"}>
                                 <Input/>
                             </Form.Item>
-                            <Form.Item label="创建时间" name="created_at">
-                                <DatePicker showTime/>
+                            <Form.Item name={"created_at"} label={"创建时间"}>
+                                <DatePicker showTime disabled/>
                             </Form.Item>
                             <Form.Item name={"updated_at"} label={"更新时间"}>
-                                <DatePicker showTime/>
+                                <DatePicker showTime disabled/>
                             </Form.Item>
                             <Button type="primary" htmlType="submit">
-                                提交
+                                Submit
                             </Button>
                         </Form>
                     </div>
@@ -118,5 +119,3 @@ function PostDetail() {
         </div>
     );
 }
-
-export default PostDetail;

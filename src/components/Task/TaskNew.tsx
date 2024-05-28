@@ -4,6 +4,7 @@ import axios from "axios";
 import {useEffect,} from "react";
 import {useNavigate} from "react-router-dom";
 import {SelectUser} from "../Common/SelectUser.tsx";
+import {PatchTask} from "../../models/models.ts";
 
 function TaskNew() {
     const navigate = useNavigate();
