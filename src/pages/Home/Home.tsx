@@ -14,6 +14,7 @@ import {Role} from "../Role/Role.tsx";
 import {Greet} from "../../components/Common/Greet.tsx";
 import {RoleNew} from "../../components/Role/RoleNew.tsx";
 import {RoleDetail} from "../../components/Role/RoleDetail.tsx";
+import {File} from "../../components/File/File.tsx";
 
 export function Home() {
     return (
@@ -34,6 +35,7 @@ export function Home() {
                 <Route path={"role/role-list"} element={<Role/>}/>
                 <Route path={"role/role-new"} element={<RoleNew/>}/>
                 <Route path={"role/role-detail/:role_id"} element={<RoleDetail/>}/>
+                <Route path={"file/*"} element={<File/>}/>
             </Routes>
         </>
     )

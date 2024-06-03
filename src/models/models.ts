@@ -104,3 +104,10 @@ export interface PatchTask {
     title: string;
     user_id: number;
 }
+
+export interface File {
+    id: string,
+    file_name: string,
+    file_url: string,
+    uploaded_at: string
+}
